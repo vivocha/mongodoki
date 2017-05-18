@@ -162,4 +162,18 @@ describe('Mongodoki', function () {
             await md2.remove();      
         });        
     });
+
+    describe('Pulling a wrong image tag', function () {
+        let md;
+        let db;
+
+        before('Create a container', async function() {
+            md = new Mongodoki('chewbacca');     
+           
+        });
+
+        it('Pulling the image should throw an Error', function() {             
+             return md.getDB('mongodoki', 'test', 60000).should.be.rejected;
+        });        
+    });
 });

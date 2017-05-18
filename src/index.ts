@@ -21,14 +21,29 @@ export class Mongodoki {
             if (info && info.State.Running) {
                 if (info.State.Paused) await c.unpause();
                 await c.stop();
-            } 
+            }
             await c.remove();
         } catch (error) {
             debug(error);
         }
 
 
-        this.image = await docker.pull(`mongo:${this.tag}`, {});
+        this.image = await new Promise((resolve, reject) => {
+
+            docker.pull(`mongo:${this.tag}`, {}, (err, stream) => {
+                if (err) reject(err);
+                else {
+                    docker.modem.followProgress(stream, onFinished, onProgress);
+                    function onProgress(event) {
+                        debug(event);
+                    }
+                    function onFinished(err, output) {
+                        if (err) reject(err);
+                        else resolve(output);
+                    }
+                }
+            });
+        });
         debug('image pulled.');
         debug('Creating mongo container');
         this.container = await docker.createContainer({
