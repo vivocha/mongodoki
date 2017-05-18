@@ -2,7 +2,14 @@
 
 A little utility to on-the-fly run MongoDB as a Docker container.
 
----
+
+
+[![travis build](https://img.shields.io/travis/vivocha/mongodoki.svg)](https://travis-ci.org/vivocha/mongodoki)
+[![Coverage Status](https://coveralls.io/repos/github/vivocha/mongodoki/badge.svg?branch=master)](https://coveralls.io/github/vivocha/mongodoki?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/github/vivocha/mongodoki/badge.svg)](https://snyk.io/test/github/vivocha/mongodoki)
+[![npm version](https://img.shields.io/npm/v/mongodoki.svg)](https://www.npmjs.com/package/mongodoki)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
 
 ## Prerequisites
 
@@ -54,7 +61,7 @@ getDB(containerName = 'mongodoki-container', dbName = 'local', timeout = 60000)
 Returns a Promise with the [Mongo driver `Db`](https://mongodb.github.io/node-mongodb-native/2.2/api/Db.html) object in case of success;
 Parameters:
 
-`containerName` -  preferred container name;
+`containerName` -  preferred container name; in case of name conflict the existimg container is stopped and removed, then started again from scratch;
 
 `dbName` -  name of the dockerized DB to connect to;
 
