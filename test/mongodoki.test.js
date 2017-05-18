@@ -49,7 +49,8 @@ describe('Mongodoki', function () {
         });
 
         after('Stop and Remove container', async function() {
-            await md.stopAndRemove();            
+            await md.stopAndRemove();
+            return;            
         });        
     });
 
@@ -75,7 +76,8 @@ describe('Mongodoki', function () {
 
         after('Stop and Remove container', async function() {
             await md.stop();    
-            await md.remove();        
+            await md.remove(); 
+            return;       
         });        
     });
 
@@ -94,7 +96,8 @@ describe('Mongodoki', function () {
 
         after('Stop and Remove container', async function() {
             await md.stop();    
-            await md.remove();        
+            await md.remove();
+            return;        
         });        
     });
 
@@ -115,7 +118,8 @@ describe('Mongodoki', function () {
 
         after('Stop and Remove the containers', async function() {
             await md2.stop();    
-            await md2.remove();      
+            await md2.remove();
+            return;      
         });        
     });
 
@@ -137,7 +141,8 @@ describe('Mongodoki', function () {
 
         after('Stop and Remove the containers', async function() {
             await md2.stop();    
-            await md2.remove();      
+            await md2.remove();
+            return;      
         });        
     });
 
@@ -159,7 +164,8 @@ describe('Mongodoki', function () {
 
         after('Stop and Remove the containers', async function() {
             await md2.stop();    
-            await md2.remove();      
+            await md2.remove(); 
+            return;     
         });        
     });
 
