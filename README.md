@@ -1,6 +1,6 @@
 # Mongodoki
 
-A little utility to on-the-fly run MongoDB as a Docker container.
+A little library to on-the-fly run MongoDB as a Docker Container.
 
 
 
@@ -52,29 +52,37 @@ where:
 
 `port` -  is the MongoDB port at which dockerized mongod will listen;
 
+---
+
 ### Mongodoki Methods
 All methods return a Promise.
+
+**Create the Container and connect to the DB**
 
 ```js
 getDB(containerName = 'mongodoki-container', dbName = 'local', timeout = 60000)
 ```
 Returns a Promise with the [Mongo driver `Db`](https://mongodb.github.io/node-mongodb-native/2.2/api/Db.html) object in case of success;
+
 Parameters:
 
-`containerName` -  preferred container name; in case of name conflict the existimg container is stopped and removed, then started again from scratch;
+`containerName` -  preferred container name; in case of name conflict the existing container is stopped and removed, then started again from scratch;
 
 `dbName` -  name of the dockerized DB to connect to;
 
-`timeout` - time to wait in order to attemp a connection to the container/db, in milliseconds;
+`timeout` - max time to wait for the container/db startup, in milliseconds;
 
 ---
+**Manage the Container**
+
+
 ```js
 stop();
 remove();
 stopAndRemove();
 ```
 respectively, they stop, remove and stop+remove the Docker container.
-Removing a container also removes all the created Docker Volumes.
+Removing a container also removes all the created (and unused) Docker Volumes on the host machine (same as running  `docker volume prune` command).
 
 
 

@@ -8,8 +8,8 @@ const docker = new Docker();
 const MAX_RETRIES = 30;
 
 export class Mongodoki {
-    image;
-    container;
+    image: any;
+    container: any;
     constructor(protected tag: string = 'latest', protected hostPort: number = 27017) {
     };
     /**
@@ -30,8 +30,6 @@ export class Mongodoki {
         } catch (error) {
             debug(error);
         }
-
-
         this.image = await new Promise((resolve, reject) => {
 
             docker.pull(`mongo:${this.tag}`, {}, (err, stream) => {
@@ -96,7 +94,8 @@ export class Mongodoki {
         return this;
     }
     /**
-     * remove the container and prune all the Docker Volumes
+     * Remove the container and prune all the unused Docker Volumes
+     * on host machine.
      */
     async remove(): Promise<Mongodoki> {
         await this.container.remove();
@@ -105,7 +104,7 @@ export class Mongodoki {
     }
 
     /**
-     * Stop and remove the comtainer, see stop() and remove()
+     * Stop and remove the container, see stop() and remove()
      */
     async stopAndRemove(): Promise<Mongodoki> {
         await this.container.stop();
