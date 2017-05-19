@@ -47,7 +47,6 @@
     "cz-conventional-changelog": "^2.0.0",
     "husky": "^0.13.3",
     "mocha": "^3.4.1",
-    "mongodb": "^2.2.26",
     "nyc": "^10.3.2",
     "rimraf": "^2.6.1",
     "semantic-release": "^6.3.6",
