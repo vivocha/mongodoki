@@ -10,10 +10,14 @@ const MAX_RETRIES = 30;
 export class Mongodoki {
     image;
     container;
-
     constructor(protected tag: string = 'latest', protected hostPort: number = 27017) {
     };
-
+    /**
+     * Start a mongo container, connect to a db and return a Promise for a mongo driver Db instance.
+     * @param containerName 
+     * @param dbName 
+     * @param timeout 
+     */
     async getDB(containerName: string = 'mongodoki-container', dbName: string = 'local', timeout: number = 60000): Promise<any> {
         try {
             let c = docker.getContainer(containerName);
@@ -84,17 +88,25 @@ export class Mongodoki {
         return db;
     }
 
+    /**
+     * Stop the container
+     */
     async stop(): Promise<Mongodoki> {
         await this.container.stop();
         return this;
     }
-
+    /**
+     * remove the container and prune all the Docker Volumes
+     */
     async remove(): Promise<Mongodoki> {
         await this.container.remove();
         await docker.pruneVolumes();
         return this;
     }
 
+    /**
+     * Stop and remove the comtainer, see stop() and remove()
+     */
     async stopAndRemove(): Promise<Mongodoki> {
         await this.container.stop();
         await this.container.remove();
