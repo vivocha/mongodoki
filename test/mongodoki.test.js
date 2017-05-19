@@ -21,7 +21,7 @@ describe('Mongodoki', function () {
             md.hostPort.should.equal(27017);
         });
 
-        it('constructor by default should init atag and set the right port', function () {
+        it('constructor by default should init Tag and set the right port', function () {
             const md = new Mongodoki(undefined, 22222);
             md.tag.should.equal('latest');
             md.hostPort.should.equal(22222);

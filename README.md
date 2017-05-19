@@ -1,4 +1,4 @@
-# Mongodocki
+# Mongodoki
 
 A little utility to on-the-fly run MongoDB as a Docker container.
 
@@ -14,7 +14,7 @@ A little utility to on-the-fly run MongoDB as a Docker container.
 ## Prerequisites
 
 
-[Docker](https://www.docker.com) must be installed and running on your machine, Mongodocki does the rest. 
+[Docker](https://www.docker.com) must be installed and running on your machine, Mongodoki does the rest. 
 Thus, no need to natively install MongoDB on your machine. 
 
 ---
@@ -85,7 +85,7 @@ Removing a container also removes all the created Docker Volumes.
 License - "MIT License"
 -----------------------
 
-Copyright (c) 2017 Antonio Pintus
+Copyright (c) 2017 Antonio Pintus, Vivocha S.p.A.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
