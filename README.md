@@ -43,14 +43,32 @@ const collections = await db.collections();
 
 ### Instantiating Mongodoki
 ```js
-const md = new Mongodoki(tag = 'latest', port = 27017); 
+const md = new Mongodoki([config]); 
 ```
+
+`config` object is optional; when missing, it defaults to `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`;
 
 where:
     
 `tag` -  is the preferred tag for the official Docker Image;
 
+`containerName`, is the name of the container to create;
+
 `port` -  is the MongoDB port at which dockerized mongod will listen;
+
+`volume` - optional, is an object with two properties:
+
+`{hostDir: <abs_path>, containerDir: <abs_path>'}`
+
+ when `volume` is specified it allows to bind a directory with path in `hostDir` in the local host machine to a container volume path specified by the `containerDir` property. All paths are *absolute*.
+
+Specifying a `volume` binding allows to locally persist the database data in the host machine, preserving it between containers start/stop/create/destroy lifecycle.
+
+Example:
+
+```js
+let md = new Mongodoki( {containerName: 'myMongo', volume: {hostDir: '/Users/diego/temp', containerDir: '/data/db'}} );
+```
 
 ---
 
@@ -60,13 +78,11 @@ All methods return a Promise.
 **Create the Container and connect to the DB**
 
 ```js
-getDB(containerName = 'mongodoki-container', dbName = 'local', timeout = 60000)
+getDB(dbName = 'local', timeout = 60000)
 ```
 Returns a Promise with the [Mongo driver `Db`](https://mongodb.github.io/node-mongodb-native/2.2/api/Db.html) object in case of success;
 
 Parameters:
-
-`containerName` -  preferred container name; in case of name conflict the existing container is stopped and removed, then started again from scratch;
 
 `dbName` -  name of the dockerized DB to connect to;
 

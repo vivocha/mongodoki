@@ -7,10 +7,30 @@ const debug = Debug('Mongodoki:main');
 const docker = new Docker();
 const MAX_RETRIES = 30;
 
+export interface Volume {
+    hostDir: string;
+    containerDir: string
+}
+export interface DokiConfiguration {
+    tag: string;
+    containerName: string;
+    hostPort: number;
+    volume?: Volume;
+}
+
 export class Mongodoki {
+    tag: string = 'latest';
+    containerName: string = 'mongodoki';
+    hostPort: number = 27017;
+    volume?: Volume;
     image: any;
     container: any;
-    constructor(protected tag: string = 'latest', protected hostPort: number = 27017) {
+
+    constructor(config: DokiConfiguration = { tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }) {
+        this.tag = config.tag || 'latest';
+        this.containerName = config.containerName || 'mongodoki';
+        this.hostPort = config.hostPort || 27017;
+        if (config.volume) this.volume = config.volume;
     };
     /**
      * Start a mongo container, connect to a db and return a Promise for a mongo driver Db instance.
@@ -18,9 +38,9 @@ export class Mongodoki {
      * @param dbName 
      * @param timeout 
      */
-    async getDB(containerName: string = 'mongodoki-container', dbName: string = 'local', timeout: number = 60000): Promise<any> {
+    async getDB(dbName: string = 'local', timeout: number = 60000): Promise<any> {
         try {
-            let c = docker.getContainer(containerName);
+            let c = docker.getContainer(this.containerName);
             let info = await c.inspect();
             if (info && info.State.Running) {
                 if (info.State.Paused) await c.unpause();
@@ -48,9 +68,9 @@ export class Mongodoki {
         });
         debug('image pulled.');
         debug('Creating mongo container');
-        this.container = await docker.createContainer({
+        let config = {
             Image: 'mongo',
-            name: containerName,
+            name: this.containerName,
             AttachStdin: false,
             AttachStdout: true,
             AttachStderr: true,
@@ -58,10 +78,15 @@ export class Mongodoki {
             ExposedPorts: { '27017/tcp': {} },
             HostConfig: {
                 PortBindings: { '27017/tcp': [{ HostIp: '127.0.0.1', HostPort: `${this.hostPort}` }] }
-            },
+            },           
             OpenStdin: false,
             StdinOnce: false
-        });
+        };
+        if (this.volume) {
+            let binds = [`${this.volume.hostDir}:${this.volume.containerDir}`];
+            config.HostConfig['Binds'] = binds;
+        }
+        this.container = await docker.createContainer(config);
         debug('Container created. Starting it...');
         await this.container.start();
 

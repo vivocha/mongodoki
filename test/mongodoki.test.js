@@ -3,6 +3,7 @@ const chai = require('chai');
 const should = chai.should();
 const chaiAsPromised = require('chai-as-promised');
 const MongoClient = require('mongodb').MongoClient;
+const utils = require('./utils.js');
 
 chai.use(chaiAsPromised);
 
@@ -16,13 +17,15 @@ describe('Mongodoki', function () {
         });
 
         it('constructor by default should init hostPort', function () {
-            const md = new Mongodoki('atag');
-            md.tag.should.equal('atag');
+            const md = new Mongodoki( {
+                tag:'aTag'
+            } );
+            md.tag.should.equal('aTag');
             md.hostPort.should.equal(27017);
         });
 
         it('constructor by default should init Tag and set the right port', function () {
-            const md = new Mongodoki(undefined, 22222);
+            const md = new Mongodoki({hostPort: 22222});
             md.tag.should.equal('latest');
             md.hostPort.should.equal(22222);
         });
@@ -34,7 +37,7 @@ describe('Mongodoki', function () {
 
         before('Start container', async function() {
             md = new Mongodoki();
-            db = await md.getDB('mongodoki','local');            
+            db = await md.getDB();            
            
         });
 
@@ -91,7 +94,7 @@ describe('Mongodoki', function () {
         });
 
         it('Starting a container with too low timeout should throw an Error', function() {             
-             return md.getDB('mongodoki', 'latest', 500).should.be.rejected;
+             return md.getDB('local', 500).should.be.rejected;
         });      
 
         after('Stop and Remove container', async function() {
@@ -107,12 +110,12 @@ describe('Mongodoki', function () {
 
         before('Create a container', async function() {
             md = new Mongodoki();     
-            db = await md.getDB('mongodoki', 'latest');
+            db = await md.getDB();
         });
 
         it('Should be OK', async function() {  
             md2 = new Mongodoki();     
-            db2 = await md2.getDB('mongodoki', 'latest');
+            db2 = await md2.getDB();
             db2.should.be.ok;
         });      
 
@@ -129,13 +132,13 @@ describe('Mongodoki', function () {
 
         before('Create a container', async function() {
             md = new Mongodoki();     
-            db = await md.getDB('mongodoki', 'latest');
+            db = await md.getDB();
             await md.container.pause();
         });
 
         it('Should be OK', async function() {  
             md2 = new Mongodoki();     
-            db2 = await md2.getDB('mongodoki', 'latest');
+            db2 = await md2.getDB();
             db2.should.be.ok;
         });      
 
@@ -152,13 +155,13 @@ describe('Mongodoki', function () {
 
         before('Create a container', async function() {
             md = new Mongodoki();     
-            db = await md.getDB('mongodoki', 'latest');
+            db = await md.getDB();
             await md.stop();
         });
 
         it('Should be OK', async function() {  
             md2 = new Mongodoki();     
-            db2 = await md2.getDB('mongodoki', 'latest');
+            db2 = await md2.getDB();
             db2.should.be.ok;
         });      
 
@@ -174,12 +177,69 @@ describe('Mongodoki', function () {
         let db;
 
         before('Create a container', async function() {
-            md = new Mongodoki('chewbacca');     
-           
+            md = new Mongodoki({tag: 'chewbacca'});            
         });
 
         it('Pulling the image should throw an Error', function() {             
-             return md.getDB('mongodoki', 'test', 60000).should.be.rejected;
+             return md.getDB('latest', 60000).should.be.rejected;
         });        
     });
+
+    
+    // Volumes
+    describe('Creating a container with a persistent volume', function () {
+        let md;
+        const path = './temp/mongodoki';
+        it('Should initialize volume properties', async function() {  
+            md = new Mongodoki( {containerName: 'doki-wVol', volume: {hostDir: path, containerDir: '/data/db'}} );     
+            md.tag.should.equal('latest');
+            md.containerName.should.equal('doki-wVol');
+            md.hostPort.should.equal(27017);
+            md.volume.should.be.ok;
+            md.volume.hostDir.should.equal(path);
+            md.volume.containerDir.should.equal('/data/db');
+        });      
+
+               
+    });
+
+    describe('Creating a container with a persistent volume', function () {
+        let md, md2;
+        let db, db2;
+        let thing = {
+            type: 'lamp',
+            isOn: true,
+        };
+        const path = `${process.cwd()}/dist/testdb`;
+        before('Create a container', async function() {
+            // Create a dir to link to volume            
+            utils.createDirSync(path);
+            md = new Mongodoki( {containerName: 'doki-wVol', volume: {hostDir: path, containerDir: '/data/db'}} );     
+            db = await md.getDB('mongodokiTest');
+            //save some data to persist
+            let coll = await db.collection('things');
+            let res = await coll.insertOne(thing);
+            return;           
+        });
+
+        it('a new container should access to same persistent volume and inserted data should be the same', async function() {  
+            md2 = new Mongodoki( {containerName: 'doki-wVol', volume: {hostDir: path, containerDir: '/data/db'}} );    
+            db2 = await md2.getDB('mongodokiTest');
+            db2.should.be.ok;
+            //check data
+            let coll = await db2.collection('things');            
+            let data = await coll.findOne({});            
+            data.should.be.ok;            
+            data.type.should.equal(thing.type);
+            data.isOn.should.equal(thing.isOn);            
+        });      
+
+        after('Stop and Remove the containers', async function() {
+            await md2.stop();    
+            await md2.remove(); 
+            utils.rmdir(path);
+            return;     
+        });        
+    });
+
 });
