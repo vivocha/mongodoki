@@ -237,7 +237,7 @@ describe('Mongodoki', function () {
         after('Stop and Remove the containers', async function() {
             await md2.stop();    
             await md2.remove(); 
-            utils.rmdir(path);
+            //utils.rmdir(path);
             return;     
         });        
     });

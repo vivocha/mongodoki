@@ -18,6 +18,7 @@ before_install:
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-engine
 before_script:
   - npm prune
+
 script:
   - npm run build
   - npm run cover
