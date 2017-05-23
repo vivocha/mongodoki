@@ -12,7 +12,7 @@
     "clean:all": "npm run clean && rimraf node_modules",
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "precommit": "npm run build && npm run cover && npm run check-coverage && rimraf dist/testdb",
+    "precommit": "npm run build && npm run cover && npm run check-coverage && rimraf test/testdb",
     "commit": "git-cz",
     "check-coverage": "nyc check-coverage --statements 95 --branches 94 --functions 100 --lines 100",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
@@ -32,6 +32,11 @@
   ],
   "author": "Antonio Pintus <apintus@vivocha.com> (http://www.vivocha.com)",
   "license": "MIT",
+  "keywords": [
+    "Docker",
+    "MongoDB",
+    "Containers"
+  ],
   "devDependencies": {
     "@types/chai": "^3.5.2",
     "@types/chai-as-promised": "0.0.30",

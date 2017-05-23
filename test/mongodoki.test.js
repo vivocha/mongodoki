@@ -210,7 +210,7 @@ describe('Mongodoki', function () {
             type: 'lamp',
             isOn: true,
         };
-        const path = `${process.cwd()}/dist/testdb`;
+        const path = `${process.cwd()}/test/testdb`;
         before('Create a container', async function() {
             // Create a dir to link to volume            
             utils.createDirSync(path);
@@ -236,8 +236,7 @@ describe('Mongodoki', function () {
 
         after('Stop and Remove the containers', async function() {
             await md2.stop();    
-            await md2.remove(); 
-            //utils.rmdir(path);
+            await md2.remove();           
             return;     
         });        
     });

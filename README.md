@@ -46,7 +46,7 @@ const collections = await db.collections();
 const md = new Mongodoki([config]); 
 ```
 
-`config` object is optional; when missing, it defaults to `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`;
+`config` object *is optional*; when missing, it defaults to `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`;
 
 where:
     
