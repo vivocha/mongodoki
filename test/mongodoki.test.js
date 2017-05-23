@@ -104,7 +104,7 @@ describe('Mongodoki', function () {
         });        
     });
 
-    describe('Trying to create a container with the same name of a running one', function () {
+    describe('Trying to create a container with the same name (default) of a running one', function () {
         let md, md2;
         let db, db2;
 
@@ -115,6 +115,28 @@ describe('Mongodoki', function () {
 
         it('Should be OK', async function() {  
             md2 = new Mongodoki();     
+            db2 = await md2.getDB();
+            db2.should.be.ok;
+        });      
+
+        after('Stop and Remove the containers', async function() {
+            await md2.stop();    
+            await md2.remove();
+            return;      
+        });        
+    });
+
+    describe('Trying to create a container with the same name of a running one', function () {
+        let md, md2;
+        let db, db2;
+
+        before('Create a container', async function() {
+            md = new Mongodoki({containerName: 'anotherAmazingMongo'});     
+            db = await md.getDB();
+        });
+
+        it('Should be OK', async function() {  
+            md2 = new Mongodoki({containerName: 'anotherAmazingMongo'});     
             db2 = await md2.getDB();
             db2.should.be.ok;
         });      

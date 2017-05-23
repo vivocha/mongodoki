@@ -1,6 +1,6 @@
 # Mongodoki
 
-A little library to on-the-fly run MongoDB as a Docker Container.
+A little library and command-lione tool to on-the-fly run MongoDB as a Docker Container.
 
 
 
@@ -18,7 +18,7 @@ A little library to on-the-fly run MongoDB as a Docker Container.
 Thus, no need to natively install MongoDB on your machine. 
 
 ---
-## Quick Start
+## Quick Start as library
 
 ```
 npm install mongodoki
@@ -37,7 +37,26 @@ const collections = await db.collections();
 ...
 ```
 
+---
+## Quick Start as command line tool
 
+```
+npm install -g mongodoki
+```
+
+```sh
+$ mongodoki --help
+```
+;)
+
+Example:
+
+```sh
+$ mongodoki start -n awesomedb
+
+$ mongodoki stop awesomedb
+```
+---
 ## API
 
 
@@ -46,7 +65,9 @@ const collections = await db.collections();
 const md = new Mongodoki([config]); 
 ```
 
-`config` object *is optional*; when missing, it defaults to `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`;
+`config` object *is optional*; when missing, it defaults to:
+
+ `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`;
 
 where:
     
@@ -60,7 +81,7 @@ where:
 
 `{hostDir: <abs_path>, containerDir: <abs_path>'}`
 
- when `volume` is specified it allows to bind a directory with path in `hostDir` in the local host machine to a container volume path specified by the `containerDir` property. All paths are *absolute*.
+ when `volume` is specified it allows to bind a directory with path in `hostDir` in the local host machine to a container volume path specified by the `containerDir` property. All paths are *absolute* and `hostDir` directory must be included in *File Sharing* Docker Preferences.
 
 Specifying a `volume` binding allows to locally persist the database data in the host machine, preserving it between containers start/stop/create/destroy lifecycle.
 

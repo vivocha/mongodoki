@@ -4,8 +4,11 @@
   "description": "A little utility to on-the-fly run MongoDB as a Docker Container",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "bin": {
+    "mongodoki": "dist/bin.js"    
+  },
   "directories": {
-    "test": "dist/test"
+    "test": "./test"
   },
   "scripts": {
     "clean": "rimraf dist coverage .nyc_output",
@@ -43,7 +46,7 @@
     "@types/chai-spies": "0.0.0",
     "@types/dockerode": "^2.4.1",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.18",
+    "@types/node": "^7.0.22",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-spies": "^0.7.1",
@@ -55,7 +58,7 @@
     "nyc": "^10.3.2",
     "rimraf": "^2.6.1",
     "semantic-release": "^6.3.6",
-    "typescript": "^2.3.2"
+    "typescript": "^2.3.3"
   },
   "config": {
     "commitizen": {
@@ -63,10 +66,12 @@
     }
   },
   "dependencies": {
+    "@types/commander": "^2.9.0",
     "@types/debug": "0.0.29",
     "@types/mongodb": "^2.2.2",
-    "debug": "^2.6.7",
+    "commander": "^2.9.0",
+    "debug": "^2.6.8",
     "dockerode": "^2.4.3",
-    "mongodb": "^2.2.26"
+    "mongodb": "^2.2.27"
   }
 }
