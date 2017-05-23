@@ -52,7 +52,7 @@ program
     .then(() => mongodoki.stopAndRemove())
     .then(() => process.exit(0))
     .catch((err) => {
-      console.log('ERROR stopping container. Use docker stop command');
+      console.log('ERROR stopping container. Try using:  docker stop <container.name> command.');
       process.exit(1)
     });
   });
@@ -60,7 +60,7 @@ program
 program.parse(process.argv);
 
 if (!(process.argv.length >= 3 && ['start', 'stop'].includes(process.argv[2]))) {
-  console.log('No command specified. Run: mongodoki --help');
+  console.log('\nNo command specified. Run: mongodoki --help');
 }
 
 

@@ -1,6 +1,6 @@
 # Mongodoki
 
-A little library and command-lione tool to on-the-fly run MongoDB as a Docker Container.
+A little library and command-line tool to on-the-fly run MongoDB as a Docker Container.
 
 
 
