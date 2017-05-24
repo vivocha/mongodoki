@@ -92,8 +92,9 @@ describe('Mongodoki', function () {
             md = new Mongodoki({tag: 'latest', containerName: 'ruggero'});           
         });
 
-        it('Starting a container with too low timeout should throw an Error', function() {             
-             return md.getDB('testDB', 50).should.be.rejected;
+        it('Starting a container with a too low timeout should throw an Error', function() {             
+             db = md.getDB('testDB', 50);
+             return db.should.be.rejected;
         });      
 
         after('Stop and Remove container', async function() {

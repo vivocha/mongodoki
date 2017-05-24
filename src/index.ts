@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 
 const debug = Debug('Mongodoki:main');
 const docker = new Docker();
-const MAX_RETRIES = 30;
+
 
 export interface Volume {
     hostDir: string;
@@ -39,6 +39,7 @@ export class Mongodoki {
      * @param timeout 
      */
     async getDB(dbName: string = 'local', timeout: number = 60000): Promise<any> {
+        const MAX_RETRIES = 30;
         try {
             let c = docker.getContainer(this.containerName);
             let info = await c.inspect();
@@ -90,7 +91,7 @@ export class Mongodoki {
         debug('Container created. Starting it...');
         await this.container.start();
 
-        let db;
+        let db = null;
         let retries = 0;
         const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         while (!db && retries <= MAX_RETRIES) {
@@ -107,7 +108,7 @@ export class Mongodoki {
             }
         }
 
-        if (!db) throw new Error('Unable to connect to DB on the container.')
+        if (!db) throw new Error('Unable to connect to DB on the container.');
         else return db;
     }
 
