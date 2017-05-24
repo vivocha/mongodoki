@@ -26,7 +26,7 @@ npm install mongodoki
 then:
 
 ```js
-const MongoDoki = require('mongodoki');
+const Mongodoki = require('mongodoki').Mongodoki;
 const md = new Mongodoki();
 
 //create and start a mongo:latest Docker container and return a MongoDB Db instance, default port: 27017, db name: local, container name: mongodoki-container

@@ -16,7 +16,7 @@ program
   .option('-d, --dbname <db>', 'Database name to create (default: testDB', 'testDB')
   .option('-D, --dbdata <path>', 'Absolute path on the local host machine to use as persistent DB data, directory must be included in Docker File Sharing preferences')
   .action((program) => {
-    console.log('\n\nRunning mongodoki. Could take some time, please wait... ');
+    console.log('\nRunning mongodoki. Could take some time, please wait... ');
     console.log(`Creating a container from Docker image mongo:${program.tag ? program.tag : 'latest'}, configuration is:\n`);
 
     const config = {
@@ -26,15 +26,15 @@ program
     };
     console.log('  - container name:', program.name);
     console.log('  - container/db local port:', program.port);
-    console.log('  - database name:', program.dbname);
-    console.log('');
+    console.log('  - database name:', program.dbname);  
     if (program.dbdata) {
-      console.log('  - database path:', program.dbdata);
+      console.log('  - database data local path:', program.dbdata);
       config['volume'] = {
         hostDir: program.dbdata,
         containerDir: '/data/db'
       }
     };
+    console.log('');
     const spinner = ora({
       spinner: 'bouncingBar',
       text: 'Creating Container...'
@@ -85,10 +85,6 @@ program.parse(process.argv);
 if (!(process.argv.length >= 3 && ['start', 'stop'].includes(process.argv[2]))) {
   console.log('\nNo command specified. Run: mongodoki --help');
 }
-
-
-
-
 
 console.log('\n');
 
