@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as program from 'commander';
 import * as doki from './index';
+const ora = require('ora');
 
 program
   .version(require('../package.json').version)
@@ -21,23 +22,36 @@ program
     const config = {
       tag: program.tag,
       containerName: program.name,
-      hostPort: program.port      
+      hostPort: program.port
     };
     console.log('  - container name:', program.name);
     console.log('  - container/db local port:', program.port);
     console.log('  - database name:', program.dbname);
+    console.log('');
     if (program.dbdata) {
       console.log('  - database path:', program.dbdata);
       config['volume'] = {
-        hostDir: program.dbdata, 
+        hostDir: program.dbdata,
         containerDir: '/data/db'
       }
-    }; 
+    };
+    const spinner = ora({
+      spinner: 'bouncingBar',
+      text: 'Creating Container...'
+    }).start();
+
     const mongodoki = new doki.Mongodoki(config);
-    mongodoki.getDB(program.dbname).then( () => {
-      console.log('Container started.');
-      process.exit(0);
-    });
+    mongodoki.getDB(program.dbname)
+      .then(() => {
+        spinner.succeed('Container started');
+        console.log('');
+        process.exit(0);
+      })
+      .catch((err) => {
+        spinner.fail('Unable to start the container');
+        console.log(err);
+        process.exit(1);
+      })
   });
 
 
@@ -46,15 +60,24 @@ program
   .description('Stop and remove an existing container')
   .usage('<container>')
   .action((container) => {
-    console.log('Stopping container: ', container);
+    console.log('');
+    const spinner = ora({
+      spinner: 'bouncingBar',
+      text: `Stopping ${container} Container...`
+    }).start();
+
     const mongodoki = new doki.Mongodoki({ tag: 'latest', containerName: container, hostPort: 27017 });
     mongodoki.getDB()
-    .then(() => mongodoki.stopAndRemove())
-    .then(() => process.exit(0))
-    .catch((err) => {
-      console.log('ERROR stopping container. Try using:  docker stop <container.name> command.');
-      process.exit(1)
-    });
+      .then(() => mongodoki.stopAndRemove())
+      .then(() => {
+        spinner.succeed('Container stopped');
+        console.log('');
+        process.exit(0);
+      })
+      .catch((err) => {
+        spinner.fail('ERROR stopping container. Try using:  docker stop <container.name> command.');
+        process.exit(1)
+      });
   });
 
 program.parse(process.argv);

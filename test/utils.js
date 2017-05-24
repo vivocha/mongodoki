@@ -4,7 +4,6 @@ const path = require('path');
 
 function createDirSync(dirPath) {
   const dir = path.normalize(dirPath);
-  console.log('Creating:', dir);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   }

@@ -94,7 +94,7 @@ describe('Mongodoki', function () {
         });
 
         it('Starting a container with too low timeout should throw an Error', function() {             
-             return md.getDB('local', 500).should.be.rejected;
+             return md.getDB('local', 100).should.be.rejected;
         });      
 
         after('Stop and Remove container', async function() {
