@@ -102,13 +102,13 @@ export class Mongodoki {
                 });
             } catch (error) {
                 debug('ERROR connecting... retrying')
-                await wait(timeout / MAX_RETRIES);
+                await wait(Math.round(timeout / MAX_RETRIES));
                 retries += 1;
             }
         }
 
         if (!db) throw new Error('Unable to connect to DB on the container.')
-        return db;
+        else return db;
     }
 
     /**
