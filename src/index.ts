@@ -102,7 +102,8 @@ export class Mongodoki {
                     reconnectInterval: 1000
                 });
             } catch (error) {
-                debug('ERROR connecting... retrying')
+                debug('ERROR connecting... retrying');
+                debug('retries:'+retries);
                 await wait(Math.round(timeout / MAX_RETRIES));
                 retries += 1;
             }
