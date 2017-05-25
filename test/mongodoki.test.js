@@ -93,8 +93,7 @@ describe('Mongodoki', function () {
         });
 
         it('Starting a container with a too low timeout should throw an Error', function() {             
-             db = md.getDB('testDB', 50);
-             return db.should.be.rejected;
+             return md.getDB('testDB', 50).should.be.rejected;
         });      
 
         after('Stop and Remove container', async function() {
@@ -204,7 +203,7 @@ describe('Mongodoki', function () {
 
         it('Pulling the image should throw an Error', function() {             
              return md.getDB('latest', 60000).should.be.rejected;
-        });        
+        });  
     });
 
     
@@ -220,9 +219,7 @@ describe('Mongodoki', function () {
             md.volume.should.be.ok;
             md.volume.hostDir.should.equal(path);
             md.volume.containerDir.should.equal('/data/db');
-        });      
-
-               
+        });                
     });
 
     describe('Creating a container with a persistent volume', function () {

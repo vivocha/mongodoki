@@ -108,7 +108,7 @@ export class Mongodoki {
                 retries += 1;
             }
         }
-
+        console.log('DB is:', db);
         if (!db) throw new Error('Unable to connect to DB on the container.');
         else return db;
     }
