@@ -88,12 +88,12 @@ describe('Mongodoki', function () {
         let md;
         let db;
 
-        before('Create a container', async function() {
+        before('Create a container for timeouts testing', async function() {
             md = new Mongodoki({tag: 'latest', containerName: 'ruggero'});           
         });
 
         it('Starting a container with a too low timeout should throw an Error', function() {             
-             return md.getDB('testDB', 50).should.be.rejected;
+             return md.getDB('anotherAmazingDB', 50).should.be.rejected;
         });      
 
         after('Stop and Remove container', async function() {
