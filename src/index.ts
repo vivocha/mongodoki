@@ -39,6 +39,7 @@ export class Mongodoki {
      * @param containerName 
      * @param dbName 
      * @param timeout 
+     * @param dbDumpPath
      */
     async getDB(dbName: string = 'local', timeout: number = 60000, dbDumpPath?: string): Promise<any> {
         const MAX_RETRIES = 30;

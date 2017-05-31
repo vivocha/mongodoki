@@ -317,7 +317,7 @@ describe('Mongodoki', function () {
         });
 
         it('container should start, but an error should occur', async function () {
-            return md.getDB('testRestoreDB', 20, './test/testdump').should.be.rejected;
+            return md.getDB('testRestoreDB', 1, './test/testdump').should.be.rejected;
         });
 
         after('Stop and Remove container', async function () {
