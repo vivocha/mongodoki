@@ -96,10 +96,10 @@ let md = new Mongodoki( {containerName: 'myMongo', volume: {hostDir: '/Users/die
 ### Mongodoki Methods
 All methods return a Promise.
 
-**Create the Container and connect to the DB**
+**Create the Container (eventually import a data dump) and connect to the DB**
 
 ```js
-getDB(dbName = 'local', timeout = 60000)
+getDB(dbName = 'local' [, timeout = 60000] [, dbDumpPath] )
 ```
 Returns a Promise with the [Mongo driver `Db`](https://mongodb.github.io/node-mongodb-native/2.2/api/Db.html) object in case of success;
 
@@ -107,7 +107,9 @@ Parameters:
 
 `dbName` -  name of the dockerized DB to connect to;
 
-`timeout` - max time to wait for the container/db startup, in milliseconds;
+`timeout` - *optional*, max time to wait for the container/db startup, in milliseconds (default: 60000);
+
+`dbDumpPath` - *optional*, root directory path of a db dump (previously created by MongoDB `mongodump` tool); in case of a successful import the created database on the container will contain the restored data.
 
 ---
 **Manage the Container**

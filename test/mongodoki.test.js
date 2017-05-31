@@ -17,15 +17,15 @@ describe('Mongodoki', function () {
         });
 
         it('constructor by default should init hostPort', function () {
-            const md = new Mongodoki( {
-                tag:'aTag'
-            } );
+            const md = new Mongodoki({
+                tag: 'aTag'
+            });
             md.tag.should.equal('aTag');
             md.hostPort.should.equal(27017);
         });
 
         it('constructor by default should init Tag and set the right port', function () {
-            const md = new Mongodoki({hostPort: 22222});
+            const md = new Mongodoki({ hostPort: 22222 });
             md.tag.should.equal('latest');
             md.hostPort.should.equal(22222);
         });
@@ -35,191 +35,191 @@ describe('Mongodoki', function () {
         let md;
         let db;
 
-        before('Start container', async function() {
+        before('Start container', async function () {
             md = new Mongodoki();
-            db = await md.getDB();            
-           
+            db = await md.getDB();
+
         });
 
         it('container should start and a connection to DB should be established', async function () {
-            
+
             db.should.be.ok;
             // get
             const collections = await db.collections();
             collections.should.be.ok;
-            await db.close(); 
-                     
+            await db.close();
+
         });
 
-        after('Stop and Remove container', async function() {
+        after('Stop and Remove container', async function () {
             await md.stopAndRemove();
-            return;            
-        });        
+            return;
+        });
     });
 
     describe('Starting and stopping and removing the MongoDB container', function () {
         let md;
         let db;
 
-        before('Start container', async function() {
+        before('Start container', async function () {
             md = new Mongodoki();
-            db = await md.getDB();            
-           
+            db = await md.getDB();
+
         });
 
         it('container should start and a connection to DB should be established', async function () {
-            
+
             db.should.be.ok;
             // get
             const collections = await db.collections();
             collections.should.be.ok;
-            await db.close(); 
-                     
+            await db.close();
+
         });
 
-        after('Stop and Remove container', async function() {
-            await md.stop();    
-            await md.remove(); 
-            return;       
-        });        
+        after('Stop and Remove container', async function () {
+            await md.stop();
+            await md.remove();
+            return;
+        });
     });
 
     describe('Testing timeouts', function () {
         let md;
         let db;
 
-        before('Create a container for timeouts testing', async function() {
-            md = new Mongodoki({tag: 'latest', containerName: 'ruggero'});           
+        before('Create a container for timeouts testing', async function () {
+            md = new Mongodoki({ tag: 'latest', containerName: 'ruggero' });
         });
 
-        it('Starting a container with a too low timeout should throw an Error', function() {             
-             return md.getDB('anotherAmazingDB', 50).should.be.rejected;
-        });      
+        it('Starting a container with a too low timeout should throw an Error', function () {
+            return md.getDB('anotherAmazingDB', 50).should.be.rejected;
+        });
 
-        after('Stop and Remove container', async function() {
-            await md.stop();    
+        after('Stop and Remove container', async function () {
+            await md.stop();
             await md.remove();
-            return;        
-        });        
+            return;
+        });
     });
 
     describe('Trying to create a container with the same name (default) of a running one', function () {
         let md, md2;
         let db, db2;
 
-        before('Create a container', async function() {
-            md = new Mongodoki();     
+        before('Create a container', async function () {
+            md = new Mongodoki();
             db = await md.getDB();
         });
 
-        it('Should be OK', async function() {  
-            md2 = new Mongodoki();     
+        it('Should be OK', async function () {
+            md2 = new Mongodoki();
             db2 = await md2.getDB();
             db2.should.be.ok;
-        });      
+        });
 
-        after('Stop and Remove the containers', async function() {
-            await md2.stop();    
+        after('Stop and Remove the containers', async function () {
+            await md2.stop();
             await md2.remove();
-            return;      
-        });        
+            return;
+        });
     });
 
     describe('Trying to create a container with the same name of a running one', function () {
         let md, md2;
         let db, db2;
 
-        before('Create a container', async function() {
-            md = new Mongodoki({containerName: 'anotherAmazingMongo'});     
+        before('Create a container', async function () {
+            md = new Mongodoki({ containerName: 'anotherAmazingMongo' });
             db = await md.getDB();
         });
 
-        it('Should be OK', async function() {  
-            md2 = new Mongodoki({containerName: 'anotherAmazingMongo'});     
+        it('Should be OK', async function () {
+            md2 = new Mongodoki({ containerName: 'anotherAmazingMongo' });
             db2 = await md2.getDB();
             db2.should.be.ok;
-        });      
+        });
 
-        after('Stop and Remove the containers', async function() {
-            await md2.stop();    
+        after('Stop and Remove the containers', async function () {
+            await md2.stop();
             await md2.remove();
-            return;      
-        });        
+            return;
+        });
     });
 
     describe('Trying to create a container with the same name of a paused one', function () {
         let md, md2;
         let db, db2;
 
-        before('Create a container', async function() {
-            md = new Mongodoki();     
+        before('Create a container', async function () {
+            md = new Mongodoki();
             db = await md.getDB();
             await md.container.pause();
         });
 
-        it('Should be OK', async function() {  
-            md2 = new Mongodoki();     
+        it('Should be OK', async function () {
+            md2 = new Mongodoki();
             db2 = await md2.getDB();
             db2.should.be.ok;
-        });      
+        });
 
-        after('Stop and Remove the containers', async function() {
-            await md2.stop();    
+        after('Stop and Remove the containers', async function () {
+            await md2.stop();
             await md2.remove();
-            return;      
-        });        
+            return;
+        });
     });
 
     describe('Trying to create a container with the same name of a stopped one', function () {
         let md, md2;
         let db, db2;
 
-        before('Create a container', async function() {
-            md = new Mongodoki();     
+        before('Create a container', async function () {
+            md = new Mongodoki();
             db = await md.getDB();
             await md.stop();
         });
 
-        it('Should be OK', async function() {  
-            md2 = new Mongodoki();     
+        it('Should be OK', async function () {
+            md2 = new Mongodoki();
             db2 = await md2.getDB();
             db2.should.be.ok;
-        });      
+        });
 
-        after('Stop and Remove the containers', async function() {
-            await md2.stop();    
-            await md2.remove(); 
-            return;     
-        });        
+        after('Stop and Remove the containers', async function () {
+            await md2.stop();
+            await md2.remove();
+            return;
+        });
     });
 
     describe('Pulling a wrong image tag', function () {
         let md;
         let db;
 
-        before('Create a container', async function() {
-            md = new Mongodoki({tag: 'chewbacca'});            
+        before('Create a container', async function () {
+            md = new Mongodoki({ tag: 'chewbacca' });
         });
 
-        it('Pulling the image should throw an Error', function() {             
-             return md.getDB('latest', 60000).should.be.rejected;
-        });  
+        it('Pulling the image should throw an Error', function () {
+            return md.getDB('latest', 60000).should.be.rejected;
+        });
     });
 
-    
+
     // Volumes
     describe('Creating a container with a persistent volume', function () {
         let md;
         const path = './temp/mongodoki';
-        it('Should initialize volume properties', async function() {  
-            md = new Mongodoki( {containerName: 'doki-wVol', volume: {hostDir: path, containerDir: '/data/db'}} );     
+        it('Should initialize volume properties', async function () {
+            md = new Mongodoki({ containerName: 'doki-wVol', volume: { hostDir: path, containerDir: '/data/db' } });
             md.tag.should.equal('latest');
             md.containerName.should.equal('doki-wVol');
             md.hostPort.should.equal(27017);
             md.volume.should.be.ok;
             md.volume.hostDir.should.equal(path);
             md.volume.containerDir.should.equal('/data/db');
-        });                
+        });
     });
 
     describe('Creating a container with a persistent volume', function () {
@@ -230,34 +230,103 @@ describe('Mongodoki', function () {
             isOn: true,
         };
         const path = `${process.cwd()}/test/testdb`;
-        before('Create a container', async function() {
+        before('Create a container', async function () {
             // Create a dir to link to volume            
             utils.createDirSync(path);
-            md = new Mongodoki( {containerName: 'doki-wVol', volume: {hostDir: path, containerDir: '/data/db'}} );     
+            md = new Mongodoki({ containerName: 'doki-wVol', volume: { hostDir: path, containerDir: '/data/db' } });
             db = await md.getDB('mongodokiTest');
             //save some data to persist
             let coll = await db.collection('things');
             let res = await coll.insertOne(thing);
-            return;           
+            return;
         });
 
-        it('a new container should access to same persistent volume and inserted data should be the same', async function() {  
-            md2 = new Mongodoki( {containerName: 'doki-wVol', volume: {hostDir: path, containerDir: '/data/db'}} );    
+        it('a new container should access to same persistent volume and inserted data should be the same', async function () {
+            md2 = new Mongodoki({ containerName: 'doki-wVol', volume: { hostDir: path, containerDir: '/data/db' } });
             db2 = await md2.getDB('mongodokiTest');
             db2.should.be.ok;
             //check data
-            let coll = await db2.collection('things');            
-            let data = await coll.findOne({});            
-            data.should.be.ok;            
+            let coll = await db2.collection('things');
+            let data = await coll.findOne({});
+            data.should.be.ok;
             data.type.should.equal(thing.type);
-            data.isOn.should.equal(thing.isOn);            
-        });      
+            data.isOn.should.equal(thing.isOn);
+        });
 
-        after('Stop and Remove the containers', async function() {
-            await md2.stop();    
-            await md2.remove();           
-            return;     
-        });        
+        after('Stop and Remove the containers', async function () {
+            await md2.stop();
+            await md2.remove();
+            return;
+        });
     });
+
+    describe('Creating a container and importing a MongoDB DUMP', function () {
+        let md;
+        let db;
+
+        before('Start container', async function () {
+            md = new Mongodoki({ containerName: 'restoredMongo' });
+            db = await md.getDB('testRestoreDB', 60000, './test/testdump');
+            return db;
+        });
+
+        it('container should start, restore a DB and Things collection return data', async function () {
+            db.should.be.ok;
+            let coll = await db.collection('things');
+            let data = await coll.findOne({});
+            data.should.have.property('type');
+            data.should.have.property('status');
+            await db.close();
+            return data;
+        });
+
+        after('Stop and Remove container', async function () {
+            await md.stop();
+            await md.remove();
+            return;
+        });
+    });
+
+    describe('Creating a container and importing a MongoDB dump from a WRONG directory', function () {
+        let md;
+        let db;
+
+        before('Start container', async function () {
+            md = new Mongodoki({ containerName: 'restoredMongo' });
+            return md;
+        });
+
+        it('container should start, but an error should occur', async function () {
+            return md.getDB('testRestoreDB', 60000, './test/blackholesun').should.be.rejected;
+        });
+
+        after('Stop and Remove container', async function () {
+            await md.stop();
+            await md.remove();
+            return;
+        });
+    });
+
+     describe('Creating a container and importing a MongoDB dump with too low timeout', function () {
+        let md;
+        let db;
+
+        before('Start container', async function () {
+            md = new Mongodoki({ containerName: 'restoredMongo' });
+            return md;
+        });
+
+        it('container should start, but an error should occur', async function () {
+            return md.getDB('testRestoreDB', 20, './test/testdump').should.be.rejected;
+        });
+
+        after('Stop and Remove container', async function () {
+            await md.stop();
+            await md.remove();
+            return;
+        });
+    });
+
+    
 
 });

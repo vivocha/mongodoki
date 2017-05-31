@@ -13,8 +13,10 @@ program
   .option('-t, --tag <tag>', 'Tag of the MongoDB Docker Image to instantiate (default: latest)', 'latest')
   .option('-n, --name <name>', 'Give a name to the container (default: mongodoki)', 'mongodoki')
   .option('-p, --port <port>', 'Assign host (localhost) port at which MongoDB instance will be available (default: 27017)', 27017)
-  .option('-d, --dbname <db>', 'Database name to create (default: testDB', 'testDB')
-  .option('-D, --dbdata <path>', 'Absolute path on the local host machine to use as persistent DB data, directory must be included in Docker File Sharing preferences')
+  .option('-d, --dbname <db>', 'Database name to create (default: testDB)', 'testDB')
+  .option('-D, --dbdata <path>', 'Persist DB on the local host. Specify the absolute path on the local host machine to use as persistent DB, directory must be included in Docker File Sharing preferences')
+  .option('-i, --import <path>', 'Import DB data from specified (absolute) path directory. Data files must be produced by mongodump tool')
+  .option('-T, --timeout <ms>', 'Set the amount of time to wait for the container (in milliseconds)', 60000)
   .action((program) => {
     console.log('\nRunning mongodoki. Could take some time, please wait... ');
     console.log(`Creating a container from Docker image mongo:${program.tag ? program.tag : 'latest'}, configuration is:\n`);
@@ -26,7 +28,7 @@ program
     };
     console.log('  - container name:', program.name);
     console.log('  - container/db local port:', program.port);
-    console.log('  - database name:', program.dbname);  
+    console.log('  - database name:', program.dbname);
     if (program.dbdata) {
       console.log('  - database data local path:', program.dbdata);
       config['volume'] = {
@@ -34,6 +36,10 @@ program
         containerDir: '/data/db'
       }
     };
+    if (program.import) {
+      console.log('  - restore data from:', program.import);
+    }
+    console.log('  - timeout:', program.timeout);
     console.log('');
     const spinner = ora({
       spinner: 'bouncingBar',
@@ -41,7 +47,7 @@ program
     }).start();
 
     const mongodoki = new doki.Mongodoki(config);
-    mongodoki.getDB(program.dbname)
+    mongodoki.getDB(program.dbname, program.timeout, program.import)
       .then(() => {
         spinner.succeed('Container started');
         console.log('');

@@ -1,11 +1,13 @@
 import * as Docker from 'dockerode';
 import * as Debug from 'debug';
+import * as childp from 'child_process';
+import * as path from 'path';
+import * as util from 'util';
 
+const exec = childp.exec;
 const { MongoClient } = require('mongodb');
-
 const debug = Debug('Mongodoki:main');
 const docker = new Docker();
-
 
 export interface Volume {
     hostDir: string;
@@ -38,7 +40,7 @@ export class Mongodoki {
      * @param dbName 
      * @param timeout 
      */
-    async getDB(dbName: string = 'local', timeout: number = 60000): Promise<any> {
+    async getDB(dbName: string = 'local', timeout: number = 60000, dbDumpPath?: string): Promise<any> {
         const MAX_RETRIES = 30;
         try {
             let c = docker.getContainer(this.containerName);
@@ -52,7 +54,6 @@ export class Mongodoki {
             debug(error);
         }
         this.image = await new Promise((resolve, reject) => {
-
             docker.pull(`mongo:${this.tag}`, {}, (err, stream) => {
                 if (err) reject(err);
                 else {
@@ -75,11 +76,11 @@ export class Mongodoki {
             AttachStdin: false,
             AttachStdout: true,
             AttachStderr: true,
-            Tty: false,
+            Tty: true,
             ExposedPorts: { '27017/tcp': {} },
             HostConfig: {
                 PortBindings: { '27017/tcp': [{ HostIp: '127.0.0.1', HostPort: `${this.hostPort}` }] }
-            },           
+            },
             OpenStdin: false,
             StdinOnce: false
         };
@@ -103,14 +104,23 @@ export class Mongodoki {
                 });
             } catch (error) {
                 debug('ERROR connecting... retrying');
-                debug('retries:'+retries);
+                debug('retries:' + retries);
                 await wait(Math.round(timeout / MAX_RETRIES));
                 retries += 1;
             }
         }
-        console.log('DB is:', db);
+        try {
+            debug('trying to restore a db...')
+            if (dbDumpPath) await this.importDBData(dbDumpPath, timeout);
+        } catch (error) {
+            debug('Error restoring db:')
+            throw error;
+        }
         if (!db) throw new Error('Unable to connect to DB on the container.');
-        else return db;
+        else {
+            debug('All is ok');
+            return db;
+        }
     }
 
     /**
@@ -139,7 +149,47 @@ export class Mongodoki {
         return this;
     }
 
+    private async importDBData(dumpDirPath: string, timeout: number = 60000): Promise<any> {
+        const normalizedPath = path.normalize(dumpDirPath);
+        return new Promise((resolve, reject) => {
+            exec(`docker cp ${normalizedPath} ${this.containerName}:/dbdata`, async (err, stdout, stderr) => {
+                if (err) reject(err);
+                else {
+                    console.log(` Running mongorestore on container (${this.containerName}) for data in ${normalizedPath}`);
+                    const options = {
+                        Cmd: ['mongorestore', '/dbdata'],
+                        AttachStdout: true,
+                        AttachStderr: true,
+                        Tty: true,
+                    };
+                    try {
+                        const MAX_RETRIES = 30;
+                        let maxWaits = MAX_RETRIES;
+                        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+                        const cmd = await this.container.exec(options);
+                        const restore = await cmd.start();
+                        let status = await cmd.inspect();
+                        while (status.Running && maxWaits > 0) {
+                            await wait(timeout / MAX_RETRIES);
+                            maxWaits -= 1;
+                            status = await cmd.inspect();
+                        }
+                        if (maxWaits > 0) {
+                            resolve(restore);
+                        }
+                        else {
+                            reject(new Error('Restoring DB taking too much time. Try increasing timeout'));
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                }
+            });
+        });
+    }
 }
+
+
 
 
 
