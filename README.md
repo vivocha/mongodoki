@@ -67,13 +67,13 @@ const md = new Mongodoki([config]);
 
 `config` object *is optional*; when missing, it defaults to:
 
- `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`;
+ `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`
 
 where:
     
 `tag` -  is the preferred tag for the official Docker Image;
 
-`containerName`, is the name of the container to create;
+`containerName` -  is the name of the container to create;
 
 `port` -  is the MongoDB port at which dockerized mongod will listen;
 
