@@ -266,7 +266,7 @@ describe('Mongodoki', function () {
 
         before('Start container', async function () {
             md = new Mongodoki({ containerName: 'restoredMongo' });
-            db = await md.getDB('testRestoreDB', 60000, './test/testdump');
+            db = await md.getDB('testRestoreDB', 240000, './test/testdump');
             return db;
         });
 

@@ -17,6 +17,8 @@ A little library and command-line tool to on-the-fly run MongoDB as a Docker Con
 [Docker](https://www.docker.com) must be installed and running on your machine, Mongodoki does the rest. 
 Thus, no need to natively install MongoDB on your machine. 
 
+Node.js version 7.10.0 or 8.x.x
+
 ---
 ## Quick Start as library
 

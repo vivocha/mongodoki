@@ -42,7 +42,7 @@ export class Mongodoki {
      * @param dbDumpPath
      */
     async getDB(dbName: string = 'local', timeout: number = 60000, dbDumpPath?: string): Promise<any> {
-        const MAX_RETRIES = 30;
+        const MAX_RETRIES = 60;
         try {
             let c = docker.getContainer(this.containerName);
             let info = await c.inspect();
