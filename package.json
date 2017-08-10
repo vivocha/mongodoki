@@ -1,7 +1,7 @@
 {
   "name": "mongodoki",
   "version": "0.0.0-development",
-  "description": "A little utility to on-the-fly run MongoDB as a Docker Container",
+  "description": "A tool to on-the-fly run MongoDB as a Docker Container, data restoring included",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "bin": {
@@ -17,7 +17,7 @@
     "build": "tsc",
     "precommit": "npm run build && npm run cover && npm run check-coverage && rimraf test/testdb",
     "commit": "git-cz",
-    "check-coverage": "./node_modules/.bin/nyc check-coverage --statements 95 --branches 90 --functions 100 --lines 95",
+    "check-coverage": "./node_modules/.bin/nyc check-coverage --statements 95 --branches 85 --functions 100 --lines 95",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "watch:test": "npm t -- -w",
     "test": "mocha --no-timeouts test/*.test.js",
