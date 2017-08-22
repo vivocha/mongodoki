@@ -15,7 +15,7 @@ node_js:
   - '8'
 
 env:
-  - DEBUG=*
+  - DEBUG=Mongodoki:main
 before_install:
   - sudo apt-get update
 
