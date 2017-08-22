@@ -150,6 +150,11 @@ export class Mongodoki {
         return this;
     }
 
+    /**
+     * Import DB dump data through mongorestore
+     * @param dumpDirPath 
+     * @param timeout 
+     */
     private async importDBData(dumpDirPath: string, timeout: number = 60000): Promise<any> {
         const normalizedPath = path.normalize(dumpDirPath);
         return new Promise((resolve, reject) => {
