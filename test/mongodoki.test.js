@@ -84,7 +84,7 @@ describe('Mongodoki', function () {
         });
     });
 
-    describe('Testing timeouts', function () {
+    describe.skip('Testing timeouts', function () {
         let md;
 
         before('Create a container for timeouts testing', async function () {
@@ -306,7 +306,7 @@ describe('Mongodoki', function () {
         });
     });
 
-     describe('Creating a container and importing a MongoDB dump with too low timeout', function () {
+     describe.skip('Creating a container and importing a MongoDB dump with too low timeout', function () {
         let md;
         let db;
 
