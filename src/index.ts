@@ -106,7 +106,8 @@ export class Mongodoki {
             } catch (error) {
                 debug('ERROR connecting... retrying');
                 debug('retries:' + retries);
-                await wait(Math.round(timeout / MAX_RETRIES));
+                const t = Math.round(timeout / MAX_RETRIES);
+                await wait(t === 0 ? 2 : t);
                 retries += 1;
             }
         }
