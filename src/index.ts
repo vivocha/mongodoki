@@ -185,7 +185,7 @@ export class Mongodoki {
                             resolve(restore);
                         }
                         else {
-                            reject(new Error('Restoring DB taking too much time. Try increasing timeout'));
+                            reject(new Error('Restoring DB is taking too much time. Try increasing timeout'));
                         }
                     } catch (error) {
                         reject(error);

@@ -13,6 +13,9 @@ services:
   - docker
 node_js:
   - '8'
+
+env:
+  - DEBUG=*
 before_install:
   - sudo apt-get update
 

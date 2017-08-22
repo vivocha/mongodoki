@@ -86,14 +86,13 @@ describe('Mongodoki', function () {
 
     describe('Testing timeouts', function () {
         let md;
-        let db;
 
         before('Create a container for timeouts testing', async function () {
             md = new Mongodoki({ tag: 'latest', containerName: 'ruggero' });
         });
 
-        it('Starting a container with a too low timeout should throw an Error', function () {
-            return md.getDB('anotherAmazingDB', 1).should.be.eventually.rejected;
+        it('Starting a container with a too low timeout should throw an Error', async function () {
+            return md.getDB('anotherAmazingDB', 1).should.be.rejected;            
         });
 
         after('Stop and Remove container', async function () {
@@ -316,8 +315,8 @@ describe('Mongodoki', function () {
             return md;
         });
 
-        it('container should start, but an error should occur', function () {
-            return md.getDB('testRestoreDB', 1, './test/testdump').should.be.eventually.rejected;
+        it('container should start, but an error should occur', async function () {
+            return md.getDB('testRestoreDB', 1, './test/testdump').should.be.rejected;
         });
 
         after('Stop and Remove container', async function () {
