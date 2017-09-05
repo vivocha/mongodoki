@@ -3,11 +3,13 @@ import * as Debug from 'debug';
 import * as childp from 'child_process';
 import * as path from 'path';
 import * as util from 'util';
+import { MongoClient } from 'mongodb';
 
 const exec = childp.exec;
-const { MongoClient } = require('mongodb');
 const debug = Debug('Mongodoki:main');
 const docker = new Docker();
+
+export {MongoClient} from 'mongodb';
 
 export interface Volume {
     hostDir: string;
@@ -93,7 +95,7 @@ export class Mongodoki {
         debug('Container created. Starting it...');
         await this.container.start();
 
-        let db = null;
+        let db;
         let retries = 0;
         const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         while (!db && retries <= MAX_RETRIES) {
