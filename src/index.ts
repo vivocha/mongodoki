@@ -114,15 +114,15 @@ export class Mongodoki {
             }
         }
         try {
-            debug('trying to restore a db...')
+            debug('Trying to restore a db...')
             if (dbDumpPath) await this.importDBData(dbDumpPath, timeout);
         } catch (error) {
             debug('Error restoring db:')
             throw error;
         }
-        if (!db) throw new Error('Unable to connect to DB on the container.');
+        if (!db) throw new Error(`Unable to connect to ${dbName} DB on the ${this.containerName} container.`);
         else {
-            debug('All is ok');
+            debug('All is OK. Done.');
             return db;
         }
     }

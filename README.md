@@ -32,6 +32,7 @@ const Mongodoki = require('mongodoki').Mongodoki;
 const md = new Mongodoki();
 
 //create and start a mongo:latest Docker container and return a MongoDB Db instance, default port: 27017, db name: local, container name: mongodoki-container
+//db is a mongodb#MongoClient instance.
 const db = await md.getDB();
 
 //use Mongo Db instance through official mongodb drivers
@@ -103,7 +104,7 @@ All methods return a Promise.
 ```js
 getDB(dbName = 'local' [, timeout = 60000] [, dbDumpPath] )
 ```
-Returns a Promise with the [Mongo driver `Db`](https://mongodb.github.io/node-mongodb-native/2.2/api/Db.html) object in case of success;
+Returns a Promise with a connected [MongoClient](https://mongodb.github.io/node-mongodb-native/2.2/api/Db.html) object in case of success;
 
 Parameters:
 
