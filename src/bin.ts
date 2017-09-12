@@ -13,6 +13,7 @@ program
   .option('-t, --tag <tag>', 'Tag of the MongoDB Docker Image to instantiate (default: latest)', 'latest')
   .option('-n, --name <name>', 'Set a name to the container (default: mongodoki)', 'mongodoki')
   .option('-p, --port <port>', 'Assign host (localhost) port at which MongoDB instance will be available (default: 27017)', 27017)
+  .option('-r, --reuse', 'reuse a container, if exists')
   .option('-d, --dbname <db>', 'Database name to create (default: testDB)', 'testDB')
   .option('-D, --dbdata <path>', 'Persist DB on the local host. Specify the absolute path on the local host machine to use as persistent DB, directory must be included in Docker File Sharing preferences')
   .option('-i, --import <path>', 'Import DB data from specified (absolute) path directory. Data files must be produced by mongodump tool')
@@ -24,10 +25,11 @@ program
       tag: program.tag,
       containerName: program.name,
       hostPort: program.port,
-      reuse: false
+      reuse: program.reuse || false
     };
     console.log('  - container name:', program.name);
     console.log('  - container/db local port:', program.port);
+    console.log('  - reuse:', program.reuse || false);
     console.log('  - database name:', program.dbname);
     if (program.dbdata) {
       console.log('  - database data local path:', program.dbdata);
