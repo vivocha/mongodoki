@@ -23,7 +23,8 @@ program
     const config = {
       tag: program.tag,
       containerName: program.name,
-      hostPort: program.port
+      hostPort: program.port,
+      reuse: false
     };
     console.log('  - container name:', program.name);
     console.log('  - container/db local port:', program.port);
@@ -71,7 +72,7 @@ program
       text: `Stopping ${container} Container...`
     }).start();
 
-    const mongodoki = new doki.Mongodoki({ tag: 'latest', containerName: container, hostPort: 27017 });
+    const mongodoki = new doki.Mongodoki({ tag: 'latest', containerName: container, hostPort: 27017, reuse: false});
     mongodoki.getDB()
       .then(() => mongodoki.stopAndRemove())
       .then(() => {

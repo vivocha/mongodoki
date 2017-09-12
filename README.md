@@ -70,7 +70,7 @@ const md = new Mongodoki([config]);
 
 `config` object *is optional*; when missing, it defaults to:
 
- `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }`
+ `{ tag: 'latest', containerName: 'mongodoki', hostPort: 27017, reuse: false }`
 
 where:
     
@@ -79,6 +79,8 @@ where:
 `containerName` -  is the name of the container to create;
 
 `port` -  is the MongoDB port at which dockerized mongod will listen;
+
+`reuse` - boolean, if true it will try to reuse an existing container avoiding building a new one;
 
 `volume` - optional, is an object with two properties:
 
@@ -91,7 +93,7 @@ Specifying a `volume` binding allows to locally persist the database data in the
 Example:
 
 ```js
-let md = new Mongodoki( {containerName: 'myMongo', volume: {hostDir: '/Users/diego/temp', containerDir: '/data/db'}} );
+let md = new Mongodoki( {containerName: 'myMongo', reuse: false, volume: {hostDir: '/Users/diego/temp', containerDir: '/data/db'}} );
 ```
 
 ---

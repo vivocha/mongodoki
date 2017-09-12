@@ -9,7 +9,7 @@ const exec = childp.exec;
 const debug = Debug('Mongodoki:main');
 const docker = new Docker();
 
-export {MongoClient} from 'mongodb';
+export { MongoClient } from 'mongodb';
 
 export interface Volume {
     hostDir: string;
@@ -19,6 +19,7 @@ export interface DokiConfiguration {
     tag: string;
     containerName: string;
     hostPort: number;
+    reuse: boolean;
     volume?: Volume;
 }
 
@@ -26,14 +27,16 @@ export class Mongodoki {
     tag: string = 'latest';
     containerName: string = 'mongodoki';
     hostPort: number = 27017;
+    reuse: boolean = false;
     volume?: Volume;
     image: any;
     container: any;
 
-    constructor(config: DokiConfiguration = { tag: 'latest', containerName: 'mongodoki', hostPort: 27017 }) {
+    constructor(config: DokiConfiguration = { tag: 'latest', containerName: 'mongodoki', hostPort: 27017, reuse: false }) {
         this.tag = config.tag || 'latest';
         this.containerName = config.containerName || 'mongodoki';
         this.hostPort = config.hostPort || 27017;
+        this.reuse = config.reuse || false;
         if (config.volume) this.volume = config.volume;
     };
     /**
@@ -45,55 +48,9 @@ export class Mongodoki {
      */
     async getDB(dbName: string = 'local', timeout: number = 60000, dbDumpPath?: string): Promise<MongoClient> {
         const MAX_RETRIES = 60;
-        try {
-            let c = docker.getContainer(this.containerName);
-            let info = await c.inspect();
-            if (info && info.State.Running) {
-                if (info.State.Paused) await c.unpause();
-                await c.stop();
-            }
-            await c.remove();
-        } catch (error) {
-            debug(error);
-        }
-        this.image = await new Promise((resolve, reject) => {
-            docker.pull(`mongo:${this.tag}`, {}, (err, stream) => {
-                if (err) reject(err);
-                else {
-                    docker.modem.followProgress(stream, onFinished, onProgress);
-                    function onProgress(event) {
-                        debug(event);
-                    }
-                    function onFinished(err, output) {
-                        if (err) reject(err);
-                        else resolve(output);
-                    }
-                }
-            });
-        });
-        debug('image pulled.');
-        debug('Creating mongo container');
-        let config = {
-            Image: 'mongo',
-            name: this.containerName,
-            AttachStdin: false,
-            AttachStdout: true,
-            AttachStderr: true,
-            Tty: true,
-            ExposedPorts: { '27017/tcp': {} },
-            HostConfig: {
-                PortBindings: { '27017/tcp': [{ HostIp: '127.0.0.1', HostPort: `${this.hostPort}` }] }
-            },
-            OpenStdin: false,
-            StdinOnce: false
-        };
-        if (this.volume) {
-            let binds = [`${this.volume.hostDir}:${this.volume.containerDir}`];
-            config.HostConfig['Binds'] = binds;
-        }
-        this.container = await docker.createContainer(config);
-        debug('Container created. Starting it...');
-        await this.container.start();
+
+        if (!this.reuse) await this.createAndStartContainer();
+        else await this.startContainer();
 
         let db;
         let retries = 0;
@@ -191,6 +148,89 @@ export class Mongodoki {
                         }
                     } catch (error) {
                         reject(error);
+                    }
+                }
+            });
+        });
+    }
+    private async startContainer() {
+        debug(`Starting the container, REUSE is ${this.reuse}`);
+        try {
+            let c = docker.getContainer(this.containerName);
+            let info = await c.inspect();
+            if (info && info.State.Running) {
+                if (info.State.Paused) await c.unpause();                
+            } else if (info && !info.State.Running) {
+                //container exists but it is not running, try to start it                
+                this.container = c;
+                await this.container.start();
+                return;
+            }        
+        }
+        catch (error) {
+            debug(error);
+            //maybe container doesn't exist
+            debug(`REUSE is ${this.reuse} but container maybe doesn't exist. Creating it.`);
+            return await this.createAndStartContainer();
+        }
+    }
+    private async createAndStartContainer() {
+        debug(`Re-creating and starting the container, REUSE is ${this.reuse}`);
+        
+        try {
+            let c = docker.getContainer(this.containerName);
+            let info = await c.inspect();
+            if (info && info.State.Running) {
+                if (info.State.Paused)
+                    await c.unpause();
+                await c.stop();
+            }
+            await c.remove();
+        }
+        catch (error) {
+            debug(error);
+        }
+        this.image = await this.pullImage();
+        debug('image pulled.');
+        debug('Creating mongo container');
+        let config = {
+            Image: 'mongo',
+            name: this.containerName,
+            AttachStdin: false,
+            AttachStdout: true,
+            AttachStderr: true,
+            Tty: true,
+            ExposedPorts: { '27017/tcp': {} },
+            HostConfig: {
+                PortBindings: { '27017/tcp': [{ HostIp: '127.0.0.1', HostPort: `${this.hostPort}` }] }
+            },
+            OpenStdin: false,
+            StdinOnce: false
+        };
+        if (this.volume) {
+            let binds = [`${this.volume.hostDir}:${this.volume.containerDir}`];
+            config.HostConfig['Binds'] = binds;
+        }
+        this.container = await docker.createContainer(config);
+        debug('Container created. Starting it...');
+        await this.container.start();
+        return;
+    }
+    private async pullImage(){
+        return new Promise((resolve, reject) => {
+            docker.pull(`mongo:${this.tag}`, {}, (err, stream) => {
+                if (err)
+                    reject(err);
+                else {
+                    docker.modem.followProgress(stream, onFinished, onProgress);
+                    function onProgress(event) {
+                        debug(event);
+                    }
+                    function onFinished(err, output) {
+                        if (err)
+                            reject(err);
+                        else
+                            resolve(output);
                     }
                 }
             });

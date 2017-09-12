@@ -29,6 +29,10 @@ describe('Mongodoki', function () {
             md.tag.should.equal('latest');
             md.hostPort.should.equal(22222);
         });
+        it('constructor by default should init reuse to false', function () {
+            const md = new Mongodoki({ hostPort: 22222 });
+            md.reuse.should.be.false;
+        });
     });
 
     describe('Starting the MongoDB container', function () {
@@ -38,7 +42,6 @@ describe('Mongodoki', function () {
         before('Start container', async function () {
             md = new Mongodoki();
             db = await md.getDB();
-
         });
 
         it('container should start and a connection to DB should be established', async function () {
@@ -51,6 +54,135 @@ describe('Mongodoki', function () {
 
         });
 
+        after('Stop and Remove container', async function () {
+            await md.stopAndRemove();
+            return;
+        });
+    });
+
+    describe('Reusing a MongoDB container', function () {
+        let md;
+        let db;
+
+        before('Start a container', async function () {
+            md = new Mongodoki({ containerName: 'reusableMongo' });
+            db = await md.getDB();
+        });
+        it('container should start and a connection to DB should be established', async function () {
+            db.should.be.ok;
+            const collections = await db.collections();
+            collections.should.be.ok;
+            let coll = await db.collection('things');
+            let data = await coll.insert({ type: 'LAMP' });
+            data.should.be.ok;
+            await db.close();
+        });
+        it('Re-using the container it shoudn\'t be re-built', async function () {
+            const md = new Mongodoki({ containerName: 'reusableMongo', reuse: true });
+            const db = await md.getDB();
+            db.should.be.ok;
+            const collections = await db.collections();
+            collections.should.be.ok;
+            let coll = await db.collection('things');
+            let data = await coll.findOne({});
+            data.should.be.ok;
+            data.should.have.property('type');
+            await db.close();
+        });
+        after('Stop and Remove container', async function () {
+            await md.stopAndRemove();
+            return;
+        });
+    });
+
+    describe('Reusing a PAUSED MongoDB container', function () {
+        let md;
+        let db;
+
+        before('Start a container', async function () {
+            md = new Mongodoki({ containerName: 'reusableMongo' });
+            db = await md.getDB();
+        });
+        it('container should start and a connection to DB should be established', async function () {
+            db.should.be.ok;
+            const collections = await db.collections();
+            collections.should.be.ok;
+            let coll = await db.collection('things');
+            let data = await coll.insert({ type: 'LAMP' });
+            data.should.be.ok;
+            await db.close();
+            //pause container
+            await md.container.pause();
+            return;
+        });
+        it('Re-using the container it shoudn\'t be re-built', async function () {
+            const md = new Mongodoki({ containerName: 'reusableMongo', reuse: true });
+            const db = await md.getDB();
+            db.should.be.ok;
+            const collections = await db.collections();
+            collections.should.be.ok;
+            let coll = await db.collection('things');
+            let data = await coll.findOne({});
+            data.should.be.ok;
+            data.should.have.property('type');
+            await db.close();
+        });
+        after('Stop and Remove container', async function () {
+            await md.stopAndRemove();
+            return;
+        });
+    });
+
+    describe('Reusing a STOPPED MongoDB container', function () {
+        let md;
+        let db;
+
+        before('Start a container', async function () {
+            md = new Mongodoki({ containerName: 'reusableMongo' });
+            db = await md.getDB();
+        });
+        it('container should start and a connection to DB should be established', async function () {
+            db.should.be.ok;
+            const collections = await db.collections();
+            collections.should.be.ok;
+            let coll = await db.collection('things');
+            let data = await coll.insert({ type: 'LAMP' });
+            data.should.be.ok;
+            await db.close();
+            //stop the container
+            await md.stop();
+            return;
+        });
+        it('Re-using the container it shoudn\'t be re-built', async function () {
+            const md = new Mongodoki({ containerName: 'reusableMongo', reuse: true });
+            const db = await md.getDB();
+            db.should.be.ok;
+            const collections = await db.collections();
+            collections.should.be.ok;
+            let coll = await db.collection('things');
+            let data = await coll.findOne({});
+            data.should.be.ok;
+            data.should.have.property('type');
+            await db.close();
+        });
+        after('Stop and Remove container', async function () {
+            await md.stopAndRemove();
+            return;
+        });
+    });
+
+    describe('Trying to re-use an inexistent MongoDB container', function () {
+        let md;
+        let db;
+
+        it('the container should be built', async function () {
+            md = new Mongodoki({ containerName: 'aQuiteNewMongo', reuse: true });
+            db = await md.getDB();
+            db.should.be.ok;
+            const collections = await db.collections();
+            collections.should.be.ok;
+            await db.close();
+        });
         after('Stop and Remove container', async function () {
             await md.stopAndRemove();
             return;
@@ -92,7 +224,7 @@ describe('Mongodoki', function () {
         });
 
         it('Starting a container with a too low timeout should throw an Error', async function () {
-            return await md.getDB('anotherAmazingDB', 1).should.be.rejected;            
+            return await md.getDB('anotherAmazingDB', 1).should.be.rejected;
         });
 
         after('Stop and Remove container', async function () {
@@ -306,7 +438,7 @@ describe('Mongodoki', function () {
         });
     });
 
-     describe.skip('Creating a container and importing a MongoDB dump with too low timeout', function () {
+    describe.skip('Creating a container and importing a MongoDB dump with too low timeout', function () {
         let md;
         let db;
 
@@ -326,6 +458,6 @@ describe('Mongodoki', function () {
         });
     });
 
-    
+
 
 });
