@@ -458,6 +458,44 @@ describe('Mongodoki', function () {
         });
     });
 
+    describe('Creating a container in REUSE MODE and importing a MongoDB DUMP', function () {
+        let md;
+        let db;
+        let nDocs;
+
+        before('Start container', async function () {
+            //start a db and impotrt data
+            md = new Mongodoki({ containerName: 'restoredMongo' });
+            db = await md.getDB('testRestoreDB', 240000, './test/testdump');
+            //Add some new data
+            let coll = await db.collection('things');
+            nDocs = await coll.count({});
+            coll.insert( {type: 'NEW_TYPE', status: 'ON'} );
+            await db.close();
+            await md.stop();
+            return db;
+        });
+
+        it('container should start, NOT restore the DB and Things collection return updated data', async function () {
+            md = new Mongodoki({ containerName: 'restoredMongo', reuse: true });
+            db = await md.getDB('testRestoreDB', 240000, './test/testdump');
+            let coll = await db.collection('things');
+            const newCount = await coll.count({});
+            newCount.should.be.equal(nDocs + 1);
+            let data = await coll.findOne({type: 'NEW_TYPE'});
+            data.should.have.property('type');
+            data.should.have.property('status');
+            await db.close();
+            return data;
+        });
+
+        after('Stop and Remove container', async function () {
+            await md.stop();
+            await md.remove();
+            return;
+        });
+    });
+
 
 
 });

@@ -72,9 +72,9 @@ export class Mongodoki {
         }
         try {
             debug('Trying to restore a db...')
-            if (dbDumpPath) await this.importDBData(dbDumpPath, timeout);
+            if (!this.reuse && dbDumpPath) await this.importDBData(dbDumpPath, timeout);
         } catch (error) {
-            debug('Error restoring db:')
+            debug('Error restoring db');
             throw error;
         }
         if (!db) throw new Error(`Unable to connect to ${dbName} DB on the ${this.containerName} container.`);
@@ -159,13 +159,13 @@ export class Mongodoki {
             let c = docker.getContainer(this.containerName);
             let info = await c.inspect();
             if (info && info.State.Running) {
-                if (info.State.Paused) await c.unpause();                
+                if (info.State.Paused) await c.unpause();
             } else if (info && !info.State.Running) {
                 //container exists but it is not running, try to start it                
                 this.container = c;
                 await this.container.start();
                 return;
-            }        
+            }
         }
         catch (error) {
             debug(error);
@@ -176,7 +176,7 @@ export class Mongodoki {
     }
     private async createAndStartContainer() {
         debug(`Re-creating and starting the container, REUSE is ${this.reuse}`);
-        
+
         try {
             let c = docker.getContainer(this.containerName);
             let info = await c.inspect();
@@ -216,7 +216,7 @@ export class Mongodoki {
         await this.container.start();
         return;
     }
-    private async pullImage(){
+    private async pullImage() {
         return new Promise((resolve, reject) => {
             docker.pull(`mongo:${this.tag}`, {}, (err, stream) => {
                 if (err)
