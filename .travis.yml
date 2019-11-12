@@ -1,31 +1,24 @@
-sudo: required
 dist: trusty
 language: node_js
-cache:
-  directories:
-    - node_modules
+node_js:
+  - lts/*
+services:
+  - docker
 branches:
   only:
     - master
 notifications:
   email: false
-services:
-  - docker
-node_js:
-  - '8'
-
 env:
-  - DEBUG=Mongodoki:main
+  - DEBUG=testdoki:*
 before_install:
-  - sudo apt-get update
 
 before_script:
   - npm prune
-
 script:
-  - npm run build
+  - npm run build:all
   - npm run cover
   - npm run check-coverage
 after_success:
-  - npm run report-coverage
   - npm run semantic-release
+  - npm run report-coverage

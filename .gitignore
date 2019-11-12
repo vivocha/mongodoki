@@ -10,3 +10,5 @@ typings
 
 dist
 test/testdb
+test-results
+test/ts/*.js
