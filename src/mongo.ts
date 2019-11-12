@@ -113,4 +113,6 @@ export class MongoDoki extends TestDoki {
   }
 }
 
+// Backwards compatibility
 export const Mongodoki = MongoDoki;
+export type DokiConfiguration = TestDokiOptions;
