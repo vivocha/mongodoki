@@ -1,5 +1,5 @@
 {
-  "name": "testdoki",
+  "name": "mongodoki",
   "version": "0.0.0-development",
   "description": "A tool to on-the-fly run MongoDB as a Docker Container, data restoring included",
   "main": "dist/index.js",
