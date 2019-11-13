@@ -1,6 +1,6 @@
 {
   "name": "mongodoki",
-  "version": "0.0.0-development",
+  "version": "4.1.0",
   "description": "A tool to on-the-fly run MongoDB as a Docker Container, data restoring included",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

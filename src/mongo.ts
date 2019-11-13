@@ -91,18 +91,23 @@ export class MongoDoki extends TestDoki {
             const MAX_RETRIES = 30;
             let maxWaits = MAX_RETRIES;
             const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-            const cmd = await this.container.exec(options);
-            const restore = await cmd.start();
-            let status = await cmd.inspect();
-            while (status.Running && maxWaits > 0) {
-              await wait(timeout / MAX_RETRIES);
-              maxWaits -= 1;
-              status = await cmd.inspect();
-            }
-            if (maxWaits > 0) {
-              resolve(restore);
+            const { container } = await this.getContainer();
+            if (container) {
+              const cmd = await container.exec(options);
+              const restore = await cmd.start();
+              let status = await cmd.inspect();
+              while (status.Running && maxWaits > 0) {
+                await wait(timeout / MAX_RETRIES);
+                maxWaits -= 1;
+                status = await cmd.inspect();
+              }
+              if (maxWaits > 0) {
+                resolve(restore);
+              } else {
+                reject(new Error('Restoring DB is taking too much time. Try increasing timeout'));
+              }
             } else {
-              reject(new Error('Restoring DB is taking too much time. Try increasing timeout'));
+              throw new Error('no container');
             }
           } catch (error) {
             reject(error);

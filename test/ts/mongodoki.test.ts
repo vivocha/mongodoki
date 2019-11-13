@@ -108,7 +108,9 @@ describe('Mongodoki', function() {
       data.should.be.ok;
       //await db.close();
       //pause container
-      await md.container.pause();
+      const { container } = await (md as any).getContainer();
+      should.exist(container);
+      await container.pause();
       return;
     });
     it("Re-using the container it shoudn't be re-built", async function() {
@@ -146,7 +148,9 @@ describe('Mongodoki', function() {
       data.should.be.ok;
       //await db.close();
       //stop the container
-      await md.stop();
+      const { container } = await (md as any).getContainer();
+      should.exist(container);
+      await container.stop();
       return;
     });
     it("Re-using the container it shoudn't be re-built", async function() {
@@ -278,7 +282,9 @@ describe('Mongodoki', function() {
     before('Create a container', async function() {
       md = new Mongodoki();
       db = await md.getDB();
-      await md.container.pause();
+      const { container } = await (md as any).getContainer();
+      should.exist(container);
+      await container.pause();
     });
 
     it('Should be OK', async function() {

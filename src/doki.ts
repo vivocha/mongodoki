@@ -24,9 +24,6 @@ export class TestDoki {
   static DEFAULT_TAG = 'latest';
   static DEFAULT_CONTAINER = 'testdoki';
 
-  protected image: any;
-  protected container: any;
-
   constructor(protected opts: TestDokiOptions = {}, protected logger: Logger = getLogger('testdoki')) {
     if (!this.opts.tag) this.opts.tag = TestDoki.DEFAULT_TAG;
     if (!this.opts.containerName) this.opts.containerName = TestDoki.DEFAULT_CONTAINER;
@@ -36,54 +33,77 @@ export class TestDoki {
     }
   }
 
+  protected async getContainer(): Promise<{ container?: Docker.Container; info?: Docker.ContainerInspectInfo }> {
+    if (!this.opts.containerName) {
+      throw new Error('no container name');
+    }
+    const container = docker.getContainer(this.opts.containerName);
+    try {
+      const info = await container.inspect();
+      return { container, info };
+    } catch (err) {
+      return {};
+    }
+  }
+
   /**
    * Stop the container
    */
   async stop(): Promise<this> {
-    if (!this.container) {
-      throw new Error('no container');
+    try {
+      const { container, info } = await this.getContainer();
+      if (container && info && info.State.Running && !info.State.Paused) {
+        await container.stop();
+      }
+    } catch (err) {
+    } finally {
+      return this;
     }
-    await this.container.stop();
-    return this;
   }
+
   /**
    * Remove the container and prune all the unused Docker Volumes
    * on host machine.
    */
   async remove(): Promise<this> {
-    if (!this.container) {
-      throw new Error('no container');
+    try {
+      const { container } = await this.getContainer();
+      if (container) {
+        await container.remove();
+        await docker.pruneVolumes();
+      }
+    } catch (err) {
+    } finally {
+      return this;
     }
-    await this.container.remove();
-    await docker.pruneVolumes();
-    return this;
   }
 
   /**
    * Stop and remove the container, see stop() and remove()
    */
   async stopAndRemove(): Promise<this> {
-    if (!this.container) {
-      throw new Error('no container');
-    }
-    await this.container.stop();
-    await this.container.remove();
+    await this.stop();
+    await this.remove();
     return this;
   }
 
   async start(): Promise<this> {
     this.logger.debug(`Starting the container, REUSE is ${!!this.opts.reuse}`);
     try {
-      let c = docker.getContainer(this.opts.containerName as string);
-      let info = await c.inspect();
-      if (info && info.State.Running) {
-        if (info.State.Paused) await c.unpause();
-      } else if (info && !info.State.Running) {
-        //container exists but it is not running, try to start it
-        this.container = c;
-        await this.container.start();
+      const { container, info } = await this.getContainer();
+      if (container && info) {
+        if (info.State.Running) {
+          if (info.State.Paused) {
+            await container.unpause();
+          }
+        } else {
+          //container exists but it is not running, try to start it
+          await container.start();
+        }
+        return this;
+      } else {
+        return this.createAndStart();
       }
-      return this;
     } catch (error) {
       this.logger.error(error);
       //maybe container doesn't exist
@@ -99,17 +119,20 @@ export class TestDoki {
     }
     this.logger.debug(`Re-creating and starting the container, REUSE is ${!!this.opts.reuse}`);
     try {
-      let c = docker.getContainer(this.opts.containerName as string);
-      let info = await c.inspect();
-      if (info && info.State.Running) {
-        if (info.State.Paused) await c.unpause();
-        await c.stop();
+      const { container, info } = await this.getContainer();
+      if (container && info) {
+        if (info.State.Running) {
+          if (info.State.Paused) {
+            await container.unpause();
+          }
+          await container.stop();
+        }
+        await container.remove();
       }
-      await c.remove();
     } catch (error) {
       this.logger.error(error);
     }
-    this.image = await this.pullImage();
+    await this.pullImage();
     this.logger.debug('image pulled.');
     this.logger.debug('Creating mongo container');
     let config = {
@@ -136,9 +159,9 @@ export class TestDoki {
       let binds = [`${this.opts.volume.hostDir}:${this.opts.volume.containerDir}`];
       config.HostConfig['Binds'] = binds;
     }
-    this.container = await docker.createContainer(config);
+    const container = await docker.createContainer(config);
     this.logger.debug('Container created. Starting it...');
-    await this.container.start();
+    await container.start();
     return this;
   }
   protected async pullImage() {
