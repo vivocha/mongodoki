@@ -69,7 +69,7 @@ describe('Mongodoki', function() {
       const collections = await db.collections();
       collections.should.be.ok;
       let coll = await db.collection('things');
-      let data = await coll.insert({ type: 'LAMP' });
+      let data = await coll.insertOne({ type: 'LAMP' });
       data.should.be.ok;
       //await db.close();
     });
@@ -104,7 +104,7 @@ describe('Mongodoki', function() {
       const collections = await db.collections();
       collections.should.be.ok;
       let coll = await db.collection('things');
-      let data = await coll.insert({ type: 'LAMP' });
+      let data = await coll.insertOne({ type: 'LAMP' });
       data.should.be.ok;
       //await db.close();
       //pause container
@@ -144,7 +144,7 @@ describe('Mongodoki', function() {
       const collections = await db.collections();
       collections.should.be.ok;
       let coll = await db.collection('things');
-      let data = await coll.insert({ type: 'LAMP' });
+      let data = await coll.insertOne({ type: 'LAMP' });
       data.should.be.ok;
       //await db.close();
       //stop the container
@@ -468,7 +468,7 @@ describe('Mongodoki', function() {
       //Add some new data
       let coll = await db.collection('things');
       nDocs = await coll.countDocuments({});
-      coll.insert({ type: 'NEW_TYPE', status: 'ON' });
+      coll.insertOne({ type: 'NEW_TYPE', status: 'ON' });
       //await db.close();
       await md.stop();
       return db;

@@ -50,33 +50,33 @@
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
-    "@types/chai": "^4.2.4",
+    "@types/chai": "^4.2.7",
     "@types/chai-as-promised": "7.1.2",
     "@types/chai-spies": "1.0.1",
-    "@types/dockerode": "^2.5.20",
+    "@types/dockerode": "^2.5.21",
     "@types/mocha": "^5.2.7",
-    "@types/mongodb": "^3.3.10",
-    "@types/node": "^12.12.7",
+    "@types/mongodb": "^3.3.13",
+    "@types/node": "^12.12.18",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
     "commitizen": "^4.0.3",
-    "coveralls": "^3.0.7",
+    "coveralls": "^3.0.9",
     "cz-conventional-changelog": "^3.0.2",
-    "husky": "^3.0.9",
+    "husky": "^3.1.0",
     "mocha": "^6.2.2",
     "mochawesome": "^4.1.0",
     "nyc": "^14.1.1",
     "rimraf": "^3.0.0",
-    "semantic-release": "^15.13.30",
-    "typescript": "^3.7.2"
+    "semantic-release": "^15.13.31",
+    "typescript": "^3.7.3"
   },
   "dependencies": {
     "commander": "^4.0.1",
-    "debuggo": "^1.1.4",
+    "debuggo": "^1.2.0",
     "dockerode": "^3.0.2",
-    "mongodb": "^3.3.4",
-    "ora": "^4.0.2"
+    "mongodb": "^3.4.0",
+    "ora": "^4.0.3"
   },
   "config": {
     "commitizen": {

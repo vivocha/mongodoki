@@ -39,12 +39,7 @@ export class MongoDoki extends TestDoki {
     while (!db && retries <= MAX_RETRIES) {
       try {
         const port = this.opts.ports && this.opts.ports.length ? this.opts.ports[0].host : 27017;
-        const client = await MongoClient.connect(`mongodb://127.0.0.1:${port}`, {
-          autoReconnect: true,
-          reconnectTries: 1000,
-          reconnectInterval: 1000,
-          useUnifiedTopology: true
-        });
+        const client = await MongoClient.connect(`mongodb://127.0.0.1:${port}`, { useUnifiedTopology: true });
         db = client.db(dbName);
       } catch (error) {
         this.logger.error('ERROR connecting... retrying');
