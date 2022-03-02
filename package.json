@@ -1,6 +1,6 @@
 {
   "name": "mongodoki",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "A tool to on-the-fly run MongoDB as a Docker Container, data restoring included",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -48,35 +48,38 @@
     "Containers"
   ],
   "devDependencies": {
-    "@commitlint/cli": "^8.2.0",
-    "@commitlint/config-conventional": "^8.2.0",
-    "@types/chai": "^4.2.7",
-    "@types/chai-as-promised": "7.1.2",
-    "@types/chai-spies": "1.0.1",
-    "@types/dockerode": "^2.5.21",
-    "@types/mocha": "^5.2.7",
-    "@types/mongodb": "^3.3.13",
-    "@types/node": "^12.12.18",
-    "chai": "^4.2.0",
+    "@commitlint/cli": "^16.2.1",
+    "@commitlint/config-conventional": "^16.2.1",
+    "@types/chai": "^4.3.0",
+    "@types/chai-as-promised": "7.1.5",
+    "@types/chai-spies": "1.0.3",
+    "@types/dockerode": "^3.3.3",
+    "@types/mocha": "^9.1.0",
+    "@types/mongodb": "^4.0.6",
+    "@types/node": "^16.11.26",
+    "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
-    "commitizen": "^4.0.3",
-    "coveralls": "^3.0.9",
-    "cz-conventional-changelog": "^3.0.2",
-    "husky": "^3.1.0",
-    "mocha": "^6.2.2",
-    "mochawesome": "^4.1.0",
-    "nyc": "^14.1.1",
-    "rimraf": "^3.0.0",
-    "semantic-release": "^15.13.31",
-    "typescript": "^3.7.3"
+    "commitizen": "^4.2.4",
+    "coveralls": "^3.1.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.4",
+    "mocha": "^9.2.1",
+    "mochawesome": "^7.1.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "semantic-release": "^19.0.2",
+    "typescript": "^4.6.2"
   },
   "dependencies": {
-    "commander": "^4.0.1",
-    "debuggo": "^1.2.0",
-    "dockerode": "^3.0.2",
-    "mongodb": "^3.4.0",
-    "ora": "^4.0.3"
+    "commander": "^9.0.0",
+    "debuggo": "^1.4.1",
+    "dockerode": "^3.3.1",
+    "mongodb": "^4.4.0",
+    "ora": "^6.1.0"
+  },
+  "engines": {
+    "node": ">=16.14.0"
   },
   "config": {
     "commitizen": {

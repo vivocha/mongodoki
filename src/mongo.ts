@@ -35,11 +35,11 @@ export class MongoDoki extends TestDoki {
 
     let db: Db | undefined = undefined;
     let retries = 0;
-    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     while (!db && retries <= MAX_RETRIES) {
       try {
         const port = this.opts.ports && this.opts.ports.length ? this.opts.ports[0].host : 27017;
-        const client = await MongoClient.connect(`mongodb://127.0.0.1:${port}`, { useUnifiedTopology: true });
+        const client = await MongoClient.connect(`mongodb://127.0.0.1:${port}`);
         db = client.db(dbName);
       } catch (error) {
         this.logger.error('ERROR connecting... retrying');
@@ -80,16 +80,16 @@ export class MongoDoki extends TestDoki {
             Cmd: ['mongorestore', '/dbdata'],
             AttachStdout: true,
             AttachStderr: true,
-            Tty: true
+            Tty: true,
           };
           try {
             const MAX_RETRIES = 30;
             let maxWaits = MAX_RETRIES;
-            const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+            const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             const { container } = await this.getContainer();
             if (container) {
               const cmd = await container.exec(options);
-              const restore = await cmd.start();
+              const restore = await cmd.start({});
               let status = await cmd.inspect();
               while (status.Running && maxWaits > 0) {
                 await wait(timeout / MAX_RETRIES);

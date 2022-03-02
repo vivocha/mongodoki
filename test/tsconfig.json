@@ -1,13 +1,17 @@
 {
     "compilerOptions": {
+        "incremental": true,
         "module": "commonjs",
-        "target": "es2017",
+        "target": "es2020",
         "noImplicitAny": false,
-        "sourceMap": false,
-        "declaration": false,       
-        "strictNullChecks": true
-       
-    },
+        "sourceMap": true,
+        "declaration": true,
+        "outDir": "dist",
+        "strictNullChecks": true,
+        "allowJs": false,
+        "experimentalDecorators": true,
+        "esModuleInterop": true
+      },
     "include": [
         "./**/*"        
     ]

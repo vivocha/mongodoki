@@ -1,5 +1,5 @@
 import { getLogger, Logger } from 'debuggo';
-import * as Docker from 'dockerode';
+import Docker from 'dockerode';
 
 const docker = new Docker();
 
@@ -150,10 +150,10 @@ export class TestDoki {
         PortBindings: (this.opts.ports || []).reduce((o, i) => {
           o[`${i.container || i.host}/tcp`] = [{ HostIp: '127.0.0.1', HostPort: `${i.host}` }];
           return o;
-        }, {})
+        }, {}),
       },
       OpenStdin: false,
-      StdinOnce: false
+      StdinOnce: false,
     };
     if (this.opts.volume) {
       let binds = [`${this.opts.volume.hostDir}:${this.opts.volume.containerDir}`];
@@ -178,7 +178,7 @@ export class TestDoki {
                 resolve(output);
               }
             },
-            /*onProgress*/ event => {
+            /*onProgress*/ (event) => {
               this.logger.debug(event);
             }
           );
